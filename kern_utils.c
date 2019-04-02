@@ -394,6 +394,10 @@ void fixup_cs_restrict(uint64_t proc) {
     set_csflags(proc, CS_RESTRICT, false);
 }
 
+void fixup_cs_require_lv(uint64_t proc) {
+    set_csflags(proc, CS_REQUIRE_LV, false);
+}
+
 void fixup_cs_flags(uint64_t proc) {
     int flags = 0;
     if (OPT(GET_TASK_ALLOW)) {
@@ -424,6 +428,8 @@ void fixup(pid_t pid) {
     fixup_tfplatform(proc);
     DEBUGLOG("fixup_cs_restrict");
     fixup_cs_restrict(proc);
+    DEBUGLOG("fixup_cs_require_lv");
+    fixup_cs_require_lv(proc);
     DEBUGLOG("fixup_cs_flags");
     fixup_cs_flags(proc);
     DEBUGLOG("set_amfi_entitlements");

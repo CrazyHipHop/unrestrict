@@ -129,10 +129,4 @@ uint64_t proc_find(pid_t pid);
 uint64_t our_task_addr(void);
 void kern_utils_cleanup(void);
 
-void platformize(uint64_t proc);
-void fixup(pid_t pid);
-void fixup_setuid(pid_t pid, uint64_t proc);
-void fixup_sandbox(uint64_t proc);
-void fixup_cs_valid(uint64_t proc);
-void fixup_get_task_allow(uint64_t proc);
-
+void fixup(pid_t pid, bool unrestrict);

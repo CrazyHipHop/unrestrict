@@ -120,24 +120,15 @@ static void set_csflags(uint64_t proc, uint32_t flags, bool value) {
 }
 
 
-void fixup_setuid(int pid, uint64_t proc, uint64_t ucred) {
-    char pathbuf[PROC_PIDPATHINFO_MAXSIZE];
-    bzero(pathbuf, sizeof(pathbuf));
-    
-    int ret = proc_pidpath(pid, pathbuf, sizeof(pathbuf));
-    if (ret < 0) {
-        DEBUGLOG("Unable to get path for PID %d", pid);
-        return;
-    }
-    
+void fixup_setuid(int pid, uint64_t proc, uint64_t ucred, const char *path) {
     struct stat file_st;
-    if (lstat(pathbuf, &file_st) == -1) {
-        DEBUGLOG("Unable to get stat for file %s", pathbuf);
+    if (lstat(path, &file_st) == -1) {
+        DEBUGLOG("Unable to get stat for file %s", path);
         return;
     }
     
     if (!(file_st.st_mode & S_ISUID) && !(file_st.st_mode & S_ISGID)) {
-        DEBUGLOG("File is not setuid or setgid: %s", pathbuf);
+        DEBUGLOG("File is not setuid or setgid: %s", path);
         return;
     }
     
@@ -149,7 +140,7 @@ void fixup_setuid(int pid, uint64_t proc, uint64_t ucred) {
     DEBUGLOG("Found proc %llx for pid %d", proc, pid);
     
     uid_t fileUid = file_st.st_uid;
-    uid_t fileGid = file_st.st_gid;
+    gid_t fileGid = file_st.st_gid;
     
     DEBUGLOG("Applying UID %d to process %d", fileUid, pid);
     
@@ -414,7 +405,7 @@ void fixup_cs_flags(uint64_t proc) {
     }
 }
 
-void fixup(pid_t pid, bool unrestrict) {
+void fixup(pid_t pid, const char *path, bool unrestrict) {
     uint64_t proc = proc_find(pid);
     if (proc == 0) {
         DEBUGLOG("failed to find proc for pid %d!", pid);
@@ -430,7 +421,7 @@ void fixup(pid_t pid, bool unrestrict) {
     uint64_t sandbox = rk64(rk64(proc_ucred + 0x78) + 0x8 + 0x8);
 
     DEBUGLOG("fixup_setuid");
-    fixup_setuid(pid, proc, proc_ucred);
+    fixup_setuid(pid, proc, proc_ucred, path);
     DEBUGLOG("fixup_sandbox");
     fixup_sandbox(proc, proc_ucred, sandbox);
     DEBUGLOG("fixup_tfplatform");

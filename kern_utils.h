@@ -129,4 +129,4 @@ uint64_t proc_find(pid_t pid);
 uint64_t our_task_addr(void);
 void kern_utils_cleanup(void);
 
-void fixup(pid_t pid, bool unrestrict);
+void fixup(pid_t pid, const char *path, bool unrestrict);

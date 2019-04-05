@@ -116,4 +116,4 @@ uint64_t find_port(mach_port_name_t port);
 uint64_t proc_find(pid_t pid);
 void kern_utils_cleanup(void);
 
-void fixup(pid_t pid, bool unrestrict);
+void fixup(pid_t pid, const char *path, bool unrestrict);

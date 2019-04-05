@@ -28,7 +28,7 @@ bool MSunrestrict0(mach_port_t task) {
     }
 
     DEBUGLOG("%s: (%d) fixing up", pathbuf, pid);
-    fixup(pid, true);
+    fixup(pid, pathbuf, true);
     return true;
 }
 
@@ -53,7 +53,7 @@ bool MSrevalidate0(mach_port_t task) {
         return true;
 
     if ((status & CS_VALID) == 0) {
-        fixup(pid, false);
+        fixup(pid, pathbuf, false);
     }
 
     return true;
